@@ -55,7 +55,7 @@
     .panel { margin-top: 22px; background: #fff; border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 20px 50px -20px rgba(15,23,42,.18); overflow: hidden; }
     .panel-head { display: flex; align-items: center; gap: 14px; padding: 22px 26px; border-bottom: 1px solid var(--line);
       background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 9%, #fff), #fff 70%); }
-    .panel-head .ico { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; color: #fff;
+    .panel-head .ico { flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; color: #fff;
       background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 8px 20px -6px var(--accent); }
     .panel-head h2 { font-size: 20px; letter-spacing: -.3px; }
     .panel-head p { color: var(--muted); font-size: 13px; margin-top: 2px; }
@@ -173,6 +173,41 @@
     .hitem.err .res { background: #ef4444; }
     .hitem.err .hname small { color: #b91c1c; }
     .hempty { color: #94a3b8; font-size: 13px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Units & currency ---------- */
+    .units-body { padding: 24px 26px 26px; }
+    .ucats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .ucat { border: 1.5px solid var(--line); background: #fff; color: #334155; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .ucat:hover { border-color: color-mix(in srgb, var(--accent) 50%, #e2e8f0); }
+    .ucat.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); }
+    .ucat .live { font-size: 10px; font-weight: 700; margin-left: 4px; opacity: .7; }
+    .ugrid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; align-items: center; }
+    .ubox { border: 1.5px solid var(--line); border-radius: 16px; padding: 14px 16px; background: #fff; display: grid; gap: 8px; min-width: 0; }
+    .ubox:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); }
+    .ubox.result { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 30%, #e2e8f0); }
+    .ubox > span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #64748b; }
+    .ubox input, .ubox output { font: inherit; font-size: 28px; font-weight: 800; letter-spacing: -.5px; color: var(--ink); border: none; outline: none; background: none; width: 100%; min-width: 0; }
+    .ubox output { color: var(--accent); overflow-wrap: anywhere; min-height: 1.25em; line-height: 1.25; }
+    .ubox select { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; font: inherit; font-size: 14px; font-weight: 600; background: #fff; color: #1e293b; }
+    .ubox select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+    .uswap { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; color: var(--accent); font-size: 20px; cursor: pointer; display: grid; place-items: center; transition: transform .2s, border-color .15s; }
+    .uswap:hover { border-color: var(--accent); transform: rotate(180deg); }
+    .ustatus { margin-top: 14px; font-size: 13px; color: #475569; min-height: 18px; }
+    .ustatus .rate { font-weight: 700; color: #1e293b; }
+    .ustatus .src { color: #94a3b8; font-size: 12px; margin-top: 4px; }
+    .ustatus .src a { color: inherit; }
+    .ustatus.error, .ustatus .warn { color: #b45309; }
+    .ustatus.error { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 12px 14px; }
+    .ustatus .warn { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 8px 12px; margin-top: 8px; }
+    .uall-title { font-size: 12px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: .6px; margin: 22px 0 10px; }
+    .uall { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+    .uall button { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 9px 12px; cursor: pointer; font: inherit; min-width: 0; }
+    .uall button:hover { border-color: color-mix(in srgb, var(--accent) 50%, #e2e8f0); }
+    .uall button.active { border-color: var(--accent); background: var(--accent-soft); }
+    .uall b { display: block; font-size: 14px; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .uall small { color: var(--muted); font-size: 11.5px; }
+
     .footer { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 26px; }
 
     @media (max-width: 1000px) {
@@ -193,6 +228,15 @@
       .opt { grid-template-columns: 1fr; gap: 6px; }
       .hint { margin: -6px 0 0; }
       .features { grid-template-columns: 1fr; }
+      .units-body { padding: 18px; }
+      .ucats { flex-wrap: nowrap; overflow-x: auto; margin: 0 -18px 16px; padding: 2px 18px 6px; }
+      .ucat { flex-shrink: 0; }
+      .ugrid { grid-template-columns: 1fr; gap: 0; }
+      .ubox { padding: 12px 14px; gap: 6px; }
+      .uswap { justify-self: center; transform: rotate(90deg); width: 38px; height: 38px; font-size: 17px; margin: -6px 0; position: relative; z-index: 1; }
+      .uswap:hover { transform: rotate(270deg); }
+      .ubox input, .ubox output { font-size: 24px; }
+      .uall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .history { padding: 16px; }
       .hitem { grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; }
       .hitem .when { grid-column: 2; grid-row: 2; margin-top: -4px; }
@@ -212,7 +256,7 @@
     </nav>
     <div class="hero-text">
       <h1>Convert any file, <span>in seconds</span></h1>
-      <p>Images, audio, video, documents, spreadsheets, slides, PDFs, data files, archives, fonts and 3D models. Pick a converter, drop your files, choose a format.</p>
+      <p>Images, audio, video, documents, spreadsheets, slides, PDFs, data files, archives, fonts and 3D models, plus units and currency. Pick a converter, drop your files, choose a format.</p>
     </div>
   </header>
 
@@ -224,7 +268,7 @@
         <div class="ico" id="pIcon"></div>
         <div><h2 id="pTitle"></h2><p id="pDesc"></p></div>
       </div>
-      <div class="panel-body">
+      <div class="panel-body" id="fileBody">
         <div class="col">
           <div class="step"><span class="n">1</span> Upload</div>
           <div class="drop" id="drop" tabindex="0">
@@ -251,6 +295,22 @@
             <a id="doneLink"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg> Download</a>
           </div>
         </div>
+      </div>
+      <div class="units-body" id="unitsBody" hidden>
+        <div class="ucats" id="ucats" role="tablist" aria-label="What to convert"></div>
+        <div class="ugrid" id="uGrid">
+          <label class="ubox"><span>Value</span>
+            <input id="uValue" type="text" inputmode="decimal" autocomplete="off" value="1" aria-label="Value to convert">
+            <select id="uFrom" aria-label="Convert from"></select>
+          </label>
+          <button class="uswap" id="uSwap" type="button" title="Swap units" aria-label="Swap units">⇄</button>
+          <div class="ubox result"><span>Result</span>
+            <output id="uResult" aria-live="polite"></output>
+            <select id="uTo" aria-label="Convert to"></select>
+          </div>
+        </div>
+        <div class="ustatus" id="uStatus"></div>
+        <div id="uAllWrap"><div class="uall-title">In every unit</div><div class="uall" id="uAll"></div></div>
       </div>
     </section>
 
@@ -283,6 +343,7 @@
       data: '<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/>',
       archive: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
       font: '<path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+      units: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
       model: '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
     };
     const icon = k => `<svg class="i" viewBox="0 0 24 24">${SVG[k]}</svg>`;
@@ -304,6 +365,8 @@
         note: 'No options needed. TTF and OTF outlines are redrawn for each other, keeping kerning, ligatures and names; hinting is not carried across. WOFF and WOFF2 keep the outlines as they are.' },
       { id: 'model', name: '3D model', title: '3D model converter', desc: 'Convert STL, OBJ, PLY and GLB models for printing, editing or the web.', c1: '#06b6d4', c2: '#22c55e', options: [],
         note: 'No options needed. STL and PLY hold one mesh, so parts are merged; OBJ and GLB keep them separate. An OBJ with textures comes back as a zip with its .mtl and images. Upload an OBJ on its own: its .mtl file is not read.' },
+      { id: 'units', kind: 'units', name: 'Units', title: 'Units & currency converter', desc: 'Type a value to convert length, weight, temperature, volume, area, speed, time, data size or currency.', c1: '#0ea5e9', c2: '#6366f1', options: [],
+        summary: 'Currency · Length · °C/°F' },
     ];
     const AUDIO_TARGETS = new Set(['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'opus']);
     const LOSSLESS = new Set(['wav', 'flac']);
@@ -348,8 +411,9 @@
     const uniq = a => a.filter((v, i) => a.indexOf(v) === i);
 
     function renderTools() {
+      requestAnimationFrame(() => $('tools').querySelector('.tool.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
       $('tools').innerHTML = TOOLS.map(t => {
-        const ex = uniq(extsFor(t.id).map(shortLabel)).slice(0, 5).join(' · ');
+        const ex = t.summary || uniq(extsFor(t.id).map(shortLabel)).slice(0, 5).join(' · ');
         return `<button class="tool${t === tool ? ' active' : ''}" role="tab" aria-selected="${t === tool}" data-id="${t.id}" style="--c1:${t.c1};--c2:${t.c2}">
           <div class="ico">${icon(t.id)}</div><strong>${t.name}</strong><small>${ex}</small></button>`;
       }).join('');
@@ -365,6 +429,9 @@
       renderTools();
       $('pIcon').innerHTML = icon(tool.id); $('dropIcon').innerHTML = icon(tool.id);
       $('pTitle').textContent = tool.title; $('pDesc').textContent = tool.desc;
+      const isUnits = tool.kind === 'units';
+      $('fileBody').hidden = isUnits; $('unitsBody').hidden = !isUnits;
+      if (isUnits) return Units.show();
       const exts = extsFor(tool.id);
       $('fileInput').accept = exts.map(e => '.' + e).join(',');
       $('accepts').textContent = 'Accepts ' + uniq(exts.map(shortLabel)).join(', ');
@@ -687,6 +754,101 @@
         row.querySelector('.when').title = isNaN(d) ? '' : d.toLocaleString();
       });
     }
+
+    // ---------- Units & currency (no files: a typed value, converted on the server) ----------
+    const Units = (() => {
+      const U = { cats: null, cat: 'length', pick: {}, currencies: null, seq: 0, timer: null };
+      const REMEMBER = 'convert-anything:units';
+      try { Object.assign(U, JSON.parse(localStorage.getItem(REMEMBER) || '{}')); } catch (_) {}
+      const remember = () => { try { localStorage.setItem(REMEMBER, JSON.stringify({ cat: U.cat, pick: U.pick })); } catch (_) {} };
+      const cat = () => U.cats.find(c => c.id === U.cat) || U.cats[0];
+      const msg = (html, error = false) => { $('uStatus').className = 'ustatus' + (error ? ' error' : ''); $('uStatus').innerHTML = html; };
+      const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+      async function show() {
+        try {
+          if (!U.cats) U.cats = (await (await fetch('/api/units')).json()).categories;
+        } catch (_) { return msg('Could not reach the server.', true); }
+        if (!U.cats.some(c => c.id === U.cat)) U.cat = U.cats[0].id;
+        render();
+      }
+
+      async function loadCurrencies() {
+        msg('Loading exchange rates…');
+        try {
+          const r = await fetch('/api/units/currencies'), d = await r.json();
+          if (!r.ok) throw new Error(d.error || 'Exchange rates are unavailable.');
+          U.currencies = d.currencies;
+          return true;
+        } catch (e) {
+          msg(esc(e.message === 'Failed to fetch' ? 'Could not reach the server.' : e.message), true);
+          return false;
+        }
+      }
+
+      async function render() {
+        const c = cat();
+        $('ucats').innerHTML = U.cats.map(x => `<button type="button" role="tab" class="ucat${x === c ? ' active' : ''}" aria-selected="${x === c}" data-c="${x.id}">${esc(x.name)}${x.online ? '<span class="live">LIVE</span>' : ''}</button>`).join('');
+        $('ucats').querySelector('.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        const isMoney = c.id === 'currency';
+        $('uAllWrap').hidden = isMoney; $('uGrid').hidden = false;
+        let units = c.units.map(u => ({ id: u.id, text: `${u.label} (${u.symbol})` }));
+        if (isMoney) {
+          if (!U.currencies && !(await loadCurrencies())) { if (cat() === c) $('uGrid').hidden = true; return; }
+          if (cat() !== c) return;  // switched tabs while rates loaded
+          units = U.currencies.map(x => ({ id: x.code, text: x.name === x.code ? x.code : `${x.code} · ${x.name}` }));
+        }
+        const pick = U.pick[c.id] || {}, has = id => units.some(u => u.id === id);
+        setSelects(units, has(pick.from) ? pick.from : c.default_from, has(pick.to) ? pick.to : c.default_to);
+        run(0);
+      }
+
+      function setSelects(units, from, to) {
+        const opts = cur => units.map(u => `<option value="${esc(u.id)}"${u.id === cur ? ' selected' : ''}>${esc(u.text)}</option>`).join('');
+        $('uFrom').innerHTML = opts(from); $('uTo').innerHTML = opts(to);
+        $('uFrom').disabled = $('uTo').disabled = $('uSwap').disabled = !units.length;
+      }
+
+      function run(delay = 150) {
+        clearTimeout(U.timer);
+        U.timer = setTimeout(convertNow, delay);
+      }
+
+      async function convertNow() {
+        const c = cat(), from = $('uFrom').value, to = $('uTo').value, value = $('uValue').value;
+        if (!from || !to) return;
+        U.pick[c.id] = { from, to }; remember();
+        if (!value.trim()) { $('uResult').textContent = ''; $('uAll').innerHTML = ''; return msg(''); }
+        const seq = ++U.seq;
+        let d, ok;
+        try {
+          const r = await fetch('/api/units/convert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category: c.id, value, from, to }) });
+          ok = r.ok; d = await r.json();
+        } catch (_) { ok = false; d = { error: 'Could not reach the server.' }; }
+        if (seq !== U.seq) return;  // a newer request has been sent
+        if (!ok) { $('uResult').textContent = '–'; $('uAll').innerHTML = ''; return msg(esc(d.error || 'Conversion failed.'), true); }
+        const sym = c.id === 'currency' ? d.to : (c.units.find(u => u.id === to) || {}).symbol;
+        $('uResult').textContent = `${d.result} ${sym}`;
+        if (c.id === 'currency') {
+          msg(`<div class="rate">${esc(d.rate)}</div><div class="src">${esc(d.inverse)} · Rates by <a href="${esc(d.source_url)}" target="_blank" rel="noopener">${esc(d.source)}</a>, updated ${esc(d.updated)}</div>`
+            + (d.notice ? `<div class="warn">${esc(d.notice)}</div>` : ''));
+        } else {
+          msg(`${esc(d.value)} ${esc((c.units.find(u => u.id === from) || {}).symbol)} = <b>${esc(d.result)} ${esc(sym)}</b>`);
+          $('uAll').innerHTML = d.all.map(a => {
+            const u = c.units.find(x => x.id === a.unit);
+            return `<button type="button" class="${a.unit === to ? 'active' : ''}" data-u="${esc(a.unit)}" title="${esc(a.value)} ${esc(a.symbol)}"><b>${esc(a.value)} ${esc(a.symbol)}</b><small>${esc(u.label)}</small></button>`;
+          }).join('');
+        }
+      }
+
+      $('ucats').addEventListener('click', e => { const b = e.target.closest('.ucat'); if (b && b.dataset.c !== U.cat) { U.cat = b.dataset.c; remember(); render(); } });
+      $('uValue').addEventListener('input', () => run());
+      $('uFrom').addEventListener('change', () => run(0));
+      $('uTo').addEventListener('change', () => run(0));
+      $('uSwap').addEventListener('click', () => { const f = $('uFrom').value; $('uFrom').value = $('uTo').value; $('uTo').value = f; run(0); });
+      $('uAll').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { $('uTo').value = b.dataset.u; run(0); } });
+      return { show };
+    })();
 
     // ---------- Events ----------
     $('tools').addEventListener('click', e => { const b = e.target.closest('.tool'); if (b && !busy) selectTool(b.dataset.id); });

@@ -6,6 +6,8 @@ from pathlib import Path
 from flask import Flask, request, jsonify, send_file
 from dotenv import load_dotenv
 
+import units
+
 from converter import (
     CATEGORIES, ConversionError, REGISTRY, UPLOAD_DIR, cleanup_old_jobs, convert_file,
     ext_of, formats_payload, images_to_single_pdf, safe_name, zip_outputs,
@@ -121,6 +123,31 @@ def convert():
         app.logger.exception("conversion failed")
         shutil.rmtree(work_dir, ignore_errors=True)
         return jsonify({"error": f"Conversion failed: {exc}"}), 500
+
+
+@app.get("/api/units")
+def units_list():
+    """Unit categories and their units. Currency is listed too; its codes come from /api/units/currencies."""
+    return jsonify({"categories": units.categories_payload()})
+
+
+@app.get("/api/units/currencies")
+def units_currencies():
+    try:
+        return jsonify(units.currencies_payload())
+    except units.CurrencyUnavailable as exc:
+        return jsonify({"error": str(exc), "offline": True}), 503
+
+
+@app.post("/api/units/convert")
+def units_convert():
+    data = request.get_json(silent=True) or request.form
+    try:
+        return jsonify(units.convert(data.get("category"), data.get("value"), data.get("from"), data.get("to")))
+    except units.CurrencyUnavailable as exc:
+        return jsonify({"error": str(exc), "offline": True}), 503
+    except ConversionError as exc:
+        return jsonify({"error": str(exc)}), 400
 
 
 @app.errorhandler(413)
