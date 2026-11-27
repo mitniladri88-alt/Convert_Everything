@@ -41,7 +41,7 @@
     .wrap { max-width: 1120px; margin: -88px auto 0; padding: 0 20px 60px; position: relative; z-index: 2; }
 
     /* ---------- Converter picker ---------- */
-    .tools { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 10px; }
+    .tools { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
     .tool { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 14px 14px; text-align: left; cursor: pointer; color: var(--ink);
       box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.06); transition: transform .18s, box-shadow .18s, border-color .18s; }
     .tool:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(15,23,42,.12); }
@@ -176,7 +176,7 @@
     .footer { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 26px; }
 
     @media (max-width: 1000px) {
-      .tools { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .tools { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
     @media (max-width: 760px) {
       .hero { padding: 0 16px 104px; }
@@ -212,7 +212,7 @@
     </nav>
     <div class="hero-text">
       <h1>Convert any file, <span>in seconds</span></h1>
-      <p>Images, audio, video, documents, spreadsheets, slides, PDFs, data files and archives. Pick a converter, drop your files, choose a format.</p>
+      <p>Images, audio, video, documents, spreadsheets, slides, PDFs, data files, archives, fonts and 3D models. Pick a converter, drop your files, choose a format.</p>
     </div>
   </header>
 
@@ -267,7 +267,7 @@
       <div class="feature"><div class="fi">🎯</div><div><b>Only valid formats</b><p>Each converter shows just the formats your files can actually become.</p></div></div>
       <div class="feature"><div class="fi">🔒</div><div><b>Private by default</b><p>Uploads are deleted from the server as soon as your download is sent.</p></div></div>
     </div>
-    <p class="footer">Powered by ffmpeg, LibreOffice, pandoc, Pillow, PyMuPDF, openpyxl and py7zr.</p>
+    <p class="footer">Powered by ffmpeg, LibreOffice, pandoc, Pillow, PyMuPDF, openpyxl, py7zr, fontTools and trimesh.</p>
   </main>
 
   <script src="/static/zipwriter.js"></script>
@@ -282,6 +282,8 @@
       pdf: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 18v-5h1.5a1.5 1.5 0 0 1 0 3H8"/><path d="M14 13v5"/><path d="M14 13h2.5"/>',
       data: '<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/>',
       archive: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+      font: '<path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/>',
+      model: '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
     };
     const icon = k => `<svg class="i" viewBox="0 0 24 24">${SVG[k]}</svg>`;
 
@@ -298,6 +300,10 @@
         note: 'No options needed. Nested data becomes dotted columns (like address.city) in CSV and Excel, and each Excel sheet becomes its own CSV.' },
       { id: 'archive', name: 'Archive', title: 'Archive converter', desc: 'Repack ZIP, TAR, TAR.GZ and 7z archives into any of the others.', c1: '#78716c', c2: '#0ea5e9', options: [],
         note: 'No options needed. Folders, file names and dates are kept. Links and password-protected archives are not supported.' },
+      { id: 'font', name: 'Font', title: 'Font converter', desc: 'Convert TTF, OTF, WOFF and WOFF2 fonts, for desktop apps or the web.', c1: '#8b5cf6', c2: '#ec4899', options: [],
+        note: 'No options needed. TTF and OTF outlines are redrawn for each other, keeping kerning, ligatures and names; hinting is not carried across. WOFF and WOFF2 keep the outlines as they are.' },
+      { id: 'model', name: '3D model', title: '3D model converter', desc: 'Convert STL, OBJ, PLY and GLB models for printing, editing or the web.', c1: '#06b6d4', c2: '#22c55e', options: [],
+        note: 'No options needed. STL and PLY hold one mesh, so parts are merged; OBJ and GLB keep them separate. An OBJ with textures comes back as a zip with its .mtl and images. Upload an OBJ on its own: its .mtl file is not read.' },
     ];
     const AUDIO_TARGETS = new Set(['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'opus']);
     const LOSSLESS = new Set(['wav', 'flac']);
@@ -311,6 +317,8 @@
       pptx: 'PowerPoint', odp: 'OpenDocument',
       json: 'For APIs and apps', xml: 'Structured markup', yaml: 'Config files',
       zip: 'Opens everywhere', tar: 'No compression', 'tar.gz': 'Compressed TAR', '7z': 'Smallest size',
+      ttf: 'Desktop, TrueType', otf: 'Desktop, OpenType', woff: 'Web, compressed', woff2: 'Web, smallest',
+      stl: '3D printing', obj: 'Editing apps', ply: 'Scans, with colour', glb: 'Web and AR',
     };
     const descFor = t => (t === 'pdf' && tool.id !== 'image') ? 'Print-ready'
       : (tool.id === 'data' && t === 'csv') ? 'One per sheet'

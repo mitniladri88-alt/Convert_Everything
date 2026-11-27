@@ -10,6 +10,8 @@ extensions. `convert_file` routes one file to the right engine:
                HTML, EPUB), PyMuPDF and pdf2docx (PDF input)
 * data      -> data_converter.py (CSV, JSON, XML, YAML, XLSX, Markdown)
 * archives  -> archive_converter.py (ZIP, TAR, TAR.GZ, 7z)
+* fonts     -> font_converter.py (TTF, OTF, WOFF, WOFF2)
+* 3D models -> model_converter.py (STL, OBJ, PLY, GLB)
 
 An extension can belong to more than one converter (CSV is both a spreadsheet
 and a data file). REGISTRY keeps each extension's first ("primary") category;
@@ -29,6 +31,8 @@ from PIL import Image, ImageSequence, features
 
 import archive_converter
 import data_converter
+import font_converter
+import model_converter
 from errors import ConversionError
 
 try:
@@ -81,6 +85,8 @@ LABELS = {
     "epub": "EPUB e-book", "m4a": "M4A (AAC)", "aac": "AAC", "opus": "Opus",
     "json": "JSON", "xml": "XML", "yaml": "YAML", "yml": "YAML",
     "zip": "ZIP", "tar": "TAR", "tar.gz": "TAR.GZ (gzip)", "tgz": "TAR.GZ (gzip)", "7z": "7-Zip (7z)",
+    "ttf": "TrueType (TTF)", "otf": "OpenType (OTF)", "woff": "WOFF", "woff2": "WOFF2",
+    "stl": "STL", "obj": "Wavefront OBJ", "ply": "PLY", "glb": "glTF binary (GLB)",
 }
 
 
@@ -104,6 +110,8 @@ def _registry():
     add(["pdf"], "pdf", PDF_OUT)
     add(data_converter.DATA_IN, "data", data_converter.targets_for)
     add(archive_converter.ARCHIVE_IN, "archive", archive_converter.targets_for)
+    add(font_converter.FONT_IN, "font", font_converter.targets_for)
+    add(model_converter.MODEL_IN, "model", model_converter.targets_for)
     # Same-format "conversion" is still useful for video/audio re-encoding or
     # image resizing, but hiding it keeps the picker short and obvious.
     return reg, cats
@@ -179,6 +187,10 @@ _MAGIC = {
     "docx": [b"PK"], "xlsx": [b"PK"], "pptx": [b"PK"],
     "odt": [b"PK"], "ods": [b"PK"], "odp": [b"PK"],
     "zip": [b"PK"], "7z": [b"7z\xbc\xaf\x27\x1c"], "tar.gz": [b"\x1f\x8b"], "tgz": [b"\x1f\x8b"],
+    # A .ttf may hold CFF outlines and a .otf TrueType ones, so either signature is fine.
+    "ttf": [b"\x00\x01\x00\x00", b"OTTO", b"true"], "otf": [b"OTTO", b"\x00\x01\x00\x00", b"true"],
+    "woff": [b"wOFF"], "woff2": [b"wOF2"],
+    "ply": [b"ply"], "glb": [b"glTF"],
 }
 
 
@@ -539,6 +551,10 @@ def convert_file(src: Path, target: str, out_dir: Path, options: dict | None = N
         return data_converter.convert_data(src, target, out_dir)
     if cat == "archive":
         return archive_converter.convert_archive(src, target, out_dir)
+    if cat == "font":
+        return font_converter.convert_font(src, target, out_dir)
+    if cat == "model":
+        return model_converter.convert_model(src, target, out_dir)
     raise ConversionError("Unsupported file type.")
 
 

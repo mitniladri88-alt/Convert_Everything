@@ -94,7 +94,8 @@ def convert():
         if category:
             for src in sources:
                 if ext_of(src) not in CATEGORIES.get(category, {}):
-                    raise ConversionError(f"{src.name} isn't {'an' if category[0] in 'aeiou' else 'a'} {category} file. Use the matching converter tab.")
+                    kind = {"model": "3D model"}.get(category, category)
+                    raise ConversionError(f"{src.name} isn't {'an' if kind[0] in 'aeiou' else 'a'} {kind} file. Use the matching converter tab.")
 
         all_images = all(REGISTRY.get(ext_of(s), {}).get("category") == "image" for s in sources)
         if combine and target == "pdf" and all_images and len(sources) > 1:
