@@ -1,6 +1,7 @@
 # Convert Anything
 
 Pick a converter (Image, Audio, Video, Document, Spreadsheet, Slides, PDF, Data, Archive, Font or 3D model), drop files into its own upload area, choose a format, download.
+Or open the Units tab, type a value, and convert units or currency without uploading anything.
 Built on the same stack as the PDF suite: Flask + gunicorn, a single vanilla HTML page, Docker on Fly.io.
 
 ## What it converts (v1)
@@ -18,6 +19,8 @@ Built on the same stack as the PDF suite: Flask + gunicorn, a single vanilla HTM
 | Archives | ZIP, TAR, TAR.GZ (.tgz), 7z | ZIP, TAR, TAR.GZ, 7z | zipfile, tarfile, py7zr |
 | Fonts | TTF, OTF, WOFF, WOFF2 | TTF, OTF, WOFF, WOFF2 | fontTools, brotli |
 | 3D models | STL, OBJ, PLY, GLB | STL, OBJ, PLY, GLB | trimesh |
+| Units (typed value) | Length, weight, temperature, volume, area, speed, time, data size | Any unit in the same category | pure Python (`fractions`), offline |
+| Currency (typed value) | ~160 currencies | Any other currency | free keyless rate APIs over `urllib`, cached |
 
 Extras: batch up to 20 files with per-file progress (results come back as one zip), a history of recent
 conversions, combine several images into one PDF,
@@ -52,6 +55,22 @@ Transparent images converted to JPG/PDF get a white background.
 - Archives are repacked safely: paths that try to leave the archive (`../`, absolute paths) and symlinks
   are skipped, password-protected archives are refused, and unpacked size and entry count are capped by
   `MAX_ARCHIVE_UNPACKED_MB` (default 2048) and `MAX_ARCHIVE_ENTRIES` (default 20000).
+
+### Units and currency notes
+
+- `units.py` holds every unit as an exact definition (1 in = 0.0254 m, 1 lb = 0.45359237 kg, and so on)
+  and converts with Python fractions, so 1 ft comes out as exactly 12 in. Temperature (°C, °F, K, °R)
+  is converted through kelvin and refuses values below absolute zero. Results show up to 10 significant
+  digits, with scientific notation only for very large or very small numbers. No network is needed.
+- The page converts as you type and also lists the value in every unit of the category.
+- Currency rates come from [ExchangeRate-API's open endpoint](https://www.exchangerate-api.com)
+  (`open.er-api.com`, no key, updated daily), falling back to [Frankfurter](https://www.frankfurter.app)
+  (ECB rates) if that is down. Requests use the standard library, so no new dependencies were added.
+- Rates are cached in memory and in a small JSON file (`RATES_CACHE_FILE`, default in the system temp
+  folder) and refreshed every 6 hours (`RATES_TTL_SECONDS`). If neither service answers, the last saved
+  rates are used and the page says they may be out of date. With nothing saved, the Currency tab shows
+  an "offline" message while unit conversions keep working. After a failed fetch the server waits a
+  minute before trying again, so requests stay fast while offline. Memory use is a few kilobytes.
 
 ### Font and 3D model notes
 
@@ -111,6 +130,8 @@ tools needed) and checks round-trips, nested data, multi-sheet workbooks and uns
 `tests/test_fonts_models.py` builds fonts and models in code, runs every font and model format through every
 target, checks glyphs, character maps and outline bounds survive (and that each output is the right outline
 type), and covers variable fonts, WOFF bombs, oversized or empty models and OBJ files that point at other files.
+`tests/test_units.py` checks exact unit results, round-trips every unit, bad input, and currency with the
+rate services mocked: live rates, the fallback service, saved stale rates, offline and retry backoff.
 `tests/test_batch.py` covers the per-file requests the batch UI makes, the upload limits, and the browser
 zip writer (run under Node 18+, skipped if `node` isn't installed; the zips are checked with Python's `zipfile`).
 
@@ -123,6 +144,13 @@ zip writer (run under Node 18+, skipped if `node` isn't installed; the zips are 
   `category` (`image`, `audio`, `video`, `document`, `spreadsheet`, `presentation`, `pdf`, `data`, `archive`, `font`, `model`),
   `quality`, `max_size`, `max_height`, `audio_bitrate`, `combine_pdf`. Returns the converted file,
   or a zip when there is more than one output.
+- `GET /api/units` – unit categories with their units and default pair.
+- `GET /api/units/currencies` – currency codes and names, with the rates' `updated` date, `source` and `stale`
+  flag. Returns 503 with an `error` when no rates can be loaded.
+- `POST /api/units/convert` – JSON (or form) `{"category": "length", "value": "42", "from": "km", "to": "mi"}`.
+  Returns `result` (formatted), `result_raw`, and for units `all` (the value in every unit); for currency
+  `rate`, `inverse`, `updated`, `source`, `stale` and a `notice` when the rates are old. 400 for bad input,
+  503 when currency rates are unavailable.
 
 ## Deploy (Fly.io)
 
